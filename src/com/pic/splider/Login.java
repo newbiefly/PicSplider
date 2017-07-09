@@ -35,9 +35,10 @@ public class Login {
 	 
 	 
 	 
-	  public static String post() {  
+	  public static ArrayList<Cookie> post() {  
 		  HttpClient httpclient=new DefaultHttpClient();
 	        String resStr = "";  
+	        ArrayList<Cookie> cookies = new ArrayList<Cookie>();
 	        String url = "http://www.jiepaiss.com/member.php?mod=logging&action=login&loginsubmit=yes&loginhash=L284L";
 	        // 创建httppost  
 	        HttpPost httppost = new HttpPost(url);  
@@ -67,7 +68,7 @@ public class Login {
 	                System.out.println(header.toString());  
 	            }  
 	            //读取cookie并保存文件  
-	            List<Cookie> cookies = ((AbstractHttpClient) httpclient).getCookieStore().getCookies();    
+	            cookies = (ArrayList<Cookie>) ((AbstractHttpClient) httpclient).getCookieStore().getCookies();    
 	            if (cookies.isEmpty()) {    
 	                System.out.println("None");    
 	            } else {    
@@ -76,13 +77,13 @@ public class Login {
 	                }    
 	            }  
 	            
-	            HttpGet httpget = new HttpGet("http://www.jiepaiss.com/thread-10354-1-1.html");  
+	          /*  HttpGet httpget = new HttpGet("http://www.jiepaiss.com/thread-10354-1-1.html");  
 	            HttpResponse response2 = httpclient.execute(httpget);          
 		        System.out.println("StatusCode -> " + response2.getStatusLine().getStatusCode());  
 		          
 		        HttpEntity entity2 = response2.getEntity();          
 		        String jsonStr = EntityUtils.toString(entity2);//, "utf-8");  
-		        System.out.println(jsonStr);  
+		        System.out.println(jsonStr);  */
 	            
 	            
 	            
@@ -92,7 +93,7 @@ public class Login {
 	            // 关闭连接,释放资源  
 	           // httpclient.getConnectionManager().shutdown();  
 	        }  
-	        return resStr;  
+	        return cookies;  
 	    }  
 	  
 	  
@@ -115,7 +116,6 @@ public class Login {
 	        HttpEntity entity = response.getEntity();          
 	        String jsonStr = EntityUtils.toString(entity);//, "utf-8");  
 	        System.out.println(jsonStr);  
-	          
 	        httpget.releaseConnection();  
 	}  
 	
