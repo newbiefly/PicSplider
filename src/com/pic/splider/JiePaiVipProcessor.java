@@ -18,13 +18,13 @@ import us.codecraft.webmagic.Site;
 import us.codecraft.webmagic.Spider;
 import us.codecraft.webmagic.processor.PageProcessor;
 
-public class SinaBlogProcessor implements PageProcessor {
+public class JiePaiVipProcessor implements PageProcessor {
 	
 	public static final int TYPE_FREE = 0; //免费体验
-	public static final int TYPE_VIDEO = 1; //街拍视频
+	public static final int TYPE_VIDEO = 1; //街拍视频 + 超长集合
 	public static final int TYPE_PIC = 2; //街拍图片
-	public static final int TYPE_LIFE = 3; //丝袜生活
-	public static final int TYPE_LONG = 4; //超长集合
+	public static final int TYPE_LIFE = 3; //丝袜生活 + 私密自拍
+	public static final int TYPE_SELF = 5; //
 	public static final String URL_JIEPAI_HOME = "http://www.jiepaiss.com/";
 	public static final String URL_JIEPAI_LIST = "http://www\\.jiepaiss\\.com/forum-\\d+\\.html";
 	public static final String URL_JIEPAI_DETAIL = "http://www\\.jiepaiss.\\com/thread-\\w+\\.html";
@@ -188,7 +188,7 @@ public class SinaBlogProcessor implements PageProcessor {
 	}
 
 	public static void main(String[] args) {
-		SinaBlogProcessor blogProcessor = new SinaBlogProcessor();
+		JiePaiVipProcessor blogProcessor = new JiePaiVipProcessor();
 		
 		ArrayList<Cookie> cookies = Login.post();
 		

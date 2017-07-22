@@ -24,7 +24,7 @@ public class DBServices {
 		PreparedStatement prest;
 		String sql = null;
 		Connection connection;
-		sql = "insert into pic_jiepai(id,title,type,firstUrl,time,viewNumber,amout,videoTime,likeAmount,commentAmout,domain_type) values(?,?,?,?,?,?,?,?,?,?,?)";
+		sql = "insert into pic_jiepai(id,title,type,firstUrl,time,viewNumber,amout,videoTime,likeAmount,commentAmout, isFree,domain_type) values(?,?,?,?,?,?,?,?,?,?,?,?)";
 		connection = new DBConnection().getConnection();
 		try {
 			prest = connection.prepareStatement(sql);
@@ -38,7 +38,8 @@ public class DBServices {
 			prest.setString(8, pic.videoTime);
 			prest.setInt(9, pic.likeAmount);
 			prest.setInt(10, pic.commentAmout);
-			prest.setString(11, pic.domain_type);
+			prest.setInt(11, pic.isFree);
+			prest.setString(12, pic.domain_type);
 			result = prest.executeUpdate();
 			prest.close();
 			connection.close();
