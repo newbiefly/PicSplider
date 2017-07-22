@@ -21,10 +21,10 @@ import us.codecraft.webmagic.processor.PageProcessor;
 public class JiePaiVipProcessor implements PageProcessor {
 	
 	public static final int TYPE_FREE = 0; //免费体验
-	public static final int TYPE_VIDEO = 1; //街拍视频 + 超长集合
+	public static final int TYPE_VIDEO = 1; //街拍视频 + 
 	public static final int TYPE_PIC = 2; //街拍图片
-	public static final int TYPE_LIFE = 3; //丝袜生活 + 私密自拍
-	public static final int TYPE_SELF = 5; //
+	public static final int TYPE_LIFE = 3; //丝袜生活 + 私密自拍+超长集合
+	public static final int TYPE_SELF = 5; //私密自拍
 	public static final String URL_JIEPAI_HOME = "http://www.jiepaiss.com/";
 	public static final String URL_JIEPAI_LIST = "http://www\\.jiepaiss\\.com/forum-\\d+\\.html";
 	public static final String URL_JIEPAI_DETAIL = "http://www\\.jiepaiss.\\com/thread-\\w+\\.html";
@@ -40,7 +40,7 @@ public class JiePaiVipProcessor implements PageProcessor {
 			.setDomain("www.jiepaiss.com")
 			.setSleepTime(200)
 			.setRetryTimes(5)
-			.setUserAgent("Mozilla/5.0 (Macintosh; IntelMac OS X 10_7_2)  Chrome/26.0.1410.65");
+			.setUserAgent("Mozilla/5.0 (Macintosh; IntelMac OS X 10_7_2)");
 
 	@Override
 	public void process(Page page) {
@@ -67,6 +67,8 @@ public class JiePaiVipProcessor implements PageProcessor {
 
 				} else if (("forum-91-1.html").equals(url)) {
 					request.putExtra("type", 4);
+				} else if (("forum-37-1.html").equals(url)) {
+					request.putExtra("type", 5);
 				} else {
 					request.putExtra("type", -1);
 				}
@@ -74,14 +76,17 @@ public class JiePaiVipProcessor implements PageProcessor {
 			}
 		} else if (page.getUrl().toString().indexOf("forum-") > 0) { // 列表页
 			System.out.println("列表页:"+page.getRequest().getExtra("type"));
-			if (page.getRequest().getExtra("type") == null || Integer.parseInt(page.getRequest().getExtra("type").toString()) != 3) {
+			if (page.getRequest().getExtra("type") == null || Integer.parseInt(page.getRequest().getExtra("type").toString()) != 1) {
 				return;
 			}
 			
-			if (page.getRequest().getExtra("type").toString().equals(0)) {//免费体验 当普通图片处理
+			if (page.getRequest().getExtra("type").toString().equals("0")) {//免费体验 当普通图片处理
+				System.out.println("街拍图片免费体验 ");
 				doListPageContent(page);
 			}else if(page.getRequest().getExtra("type").toString().equals("1")) {//街拍视频
-				
+				System.out.println("街拍视频");
+				doListPageContent(page);
+				doListPageCount(page);
 			}else if(page.getRequest().getExtra("type").toString().equals("2")) {//街拍图片
 				System.out.println("街拍图片");
 				doListPageContent(page);
@@ -90,31 +95,67 @@ public class JiePaiVipProcessor implements PageProcessor {
 				System.out.println("丝袜生活");
 				doListPageContent(page);
 				doListPageCount(page);
+			}else if(page.getRequest().getExtra("type").toString().equals("4")) {//超长集合 归并 3
+				System.out.println("丝袜生活");
+				doListPageContent(page);
+				//doListPageCount(page);
+			} else {
+				System.out.println("学院风格");
+				doListPageContent(page);
 			}
 			
 
 		} else if (page.getUrl().toString().indexOf("thread-") > 0) { // 详情页
-			if (page.getRequest().getExtra("type") == null || Integer.parseInt(page.getRequest().getExtra("type").toString()) != 3) {
+			if (page.getRequest().getExtra("type") == null || Integer.parseInt(page.getRequest().getExtra("type").toString()) != 1) {
 				return;
 			}
 			PicModel picModel = new PicModel();
-			if (page.getRequest().getExtra("type").toString().equals(0)) {//免费体验 当普通图片处理
+			if (page.getRequest().getExtra("type").toString().equals("0")) {//免费体验 当普通图片处理
 				picModel.title = page.getHtml().xpath("//h1[@class='ts']/a/text()").toString();
-				picModel.urls = page.getHtml().xpath("//div[@class='t_fsz']/table/tbody/tr/td/img/@file").all().toString().replace("[", "").replace("]", "");
+				picModel.urls = page.getHtml().xpath("//div[@class='t_fsz']/table/tbody/tr/td/img/@file").all().toString().replace("[", "").replace("]", "").replace(URL_JIEPAI_PIC_DOMAIN, "");
 				page.putField("title",picModel.title);
 			    page.putField("urls",picModel.urls);
 			}else if(page.getRequest().getExtra("type").toString().equals("1")) {//街拍视频
+				picModel.title = page.getHtml().xpath("//h1[@class='ts']/a/text()").toString();
+				picModel.urls = page.getHtml().xpath("//div[@class='t_fsz']/table/tbody/tr/td/img/@file").all().toString().replace("[", "").replace("]", "").replace(URL_JIEPAI_PIC_DOMAIN, "");
+				picModel.viewNumber = page.getHtml().xpath("//table[@class='cgtl']//tr[1]/td/text()").toString();
+				picModel.videoTime = page.getHtml().xpath("//table[@class='cgtl']//tr[2]/td/text()").toString();
+				page.putField("title",picModel.title);
+			    page.putField("urls",picModel.urls);
+			    page.putField("videoTime",picModel.videoTime);
+			    page.putField("viewNumber",picModel.viewNumber);
 				
 			}else if(page.getRequest().getExtra("type").toString().equals("2")) {//街拍图片
 				picModel.title = page.getHtml().xpath("//h1[@class='ts']/a/text()").toString();
 				picModel.urls = page.getHtml().xpath("//div[@class='t_fsz']/table/tbody/tr/td/img/@file").all().toString().replace("[", "").replace("]", "").replace(URL_JIEPAI_PIC_DOMAIN, "");
 				page.putField("title",picModel.title);
 			    page.putField("urls",picModel.urls);
-			}else if(page.getRequest().getExtra("type").toString().equals("3")) {//丝袜生活照
+			}else if(page.getRequest().getExtra("type").toString().equals("3")) {//超长集合 归并 3
 				picModel.title = page.getHtml().xpath("//h1[@class='ts']/a/text()").toString();
 				picModel.urls = page.getHtml().xpath("//div[@class='t_fsz']/table/tbody/tr/td/img/@file").all().toString().replace("[", "").replace("]", "").replace(URL_JIEPAI_PIC_DOMAIN, "");
 				page.putField("title",picModel.title);
 			    page.putField("urls",picModel.urls);
+			}else if(page.getRequest().getExtra("type").toString().equals("4")) {//
+				picModel.viewNumber = page.getHtml().xpath("//table[@class='cgtl']//tr[1]/td/text()").toString();
+				picModel.videoTime = page.getHtml().xpath("//table[@class='cgtl']//tr[3]/td/text()").toString();
+				picModel.title = page.getHtml().xpath("//h1[@class='ts']/a/text()").toString();
+				picModel.urls = page.getHtml().xpath("//div[@class='t_fsz']/table/tbody/tr/td/img/@file").all().toString().replace("[", "").replace("]", "").replace(URL_JIEPAI_PIC_DOMAIN, "");
+				page.putField("title",picModel.title);
+			    page.putField("urls",picModel.urls);
+			    page.putField("videoTime",picModel.videoTime);
+			    page.putField("viewNumber",picModel.viewNumber);
+			} else {
+				page.getRequest().putExtra("type", 3);
+				picModel.viewNumber = page.getHtml().xpath("//font[@color='Red']/text()").toString();
+				picModel.title = page.getHtml().xpath("//h1[@class='ts']/a/text()").toString();
+				
+				int postion = picModel.title.lastIndexOf("》");
+				picModel.title = picModel.title.substring(0, postion + 1);
+				picModel.urls = page.getHtml().xpath("//div[@class='t_fsz']/table/tbody/tr/td/img/@file").all().toString().replace("[", "").replace("]", "").replace(URL_JIEPAI_PIC_DOMAIN, "");
+				page.putField("title",picModel.title);
+			    page.putField("urls",picModel.urls);
+			    page.putField("videoTime",picModel.videoTime);
+			    page.putField("viewNumber",picModel.viewNumber);
 			}
 			picModel.type = Integer.parseInt(page.getRequest().getExtra("type").toString());
 			String[] urls = picModel.urls.split(",");
@@ -200,7 +241,8 @@ public class JiePaiVipProcessor implements PageProcessor {
 		}
 		Spider.create(blogProcessor)
 				.addUrl("http://www.jiepaiss.com/")
-				.addPipeline(new PicDataStoragePipeline()).run();
+				.addPipeline(new PicDataStoragePipeline())
+				.run();
 	}
 
 }

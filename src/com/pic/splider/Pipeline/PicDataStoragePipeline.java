@@ -28,25 +28,34 @@ public class PicDataStoragePipeline implements Pipeline {
 				pic.isFree = 1;
 			}
 			
+			
+			if (pic.type == 4) {//超长集合归并到街拍图片
+				pic.type = 3;
+			}
+			
+			if (pic.type == 1) { //街拍视频归并到街拍图片
+				pic.type = 2;
+			}
 			pic.domain_type = "100001";
 			PicVipInfo info = new PicVipInfo();
 			info.id = pic.id;
 			info.urls = pic.urls;
 			info.domain_type = "100001";
 			
-			if (DBServices.getPicByUrl(pic.firstUrl) != null) {
+			/*if (DBServices.getPicByUrl(pic.firstUrl) != null) {
 				repeat ++;
 				System.err.print("---------------一repeat----------------:"+repeat + "\n");
 				
 				return ;
-			}
+			}*/
 			amount++;
 			System.err.print("---------------一amount----------------:"+amount + "\n");
 			DBServices.addPic(pic);
 			DBServices.addPicVipInfo(info);
 		}
 		 System.out.println("get page resultItems: " + resultItems.getRequest().getUrl());
-		 System.out.println(pic.title + ":"+pic.urls);
+		 System.out.println(pic.type + ":"+ pic.title + ":"+pic.urls);
+		 System.out.println(pic.viewNumber + ":" + pic.videoTime);
 	}
 
 }
